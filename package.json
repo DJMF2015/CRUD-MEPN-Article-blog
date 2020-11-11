@@ -1,0 +1,20 @@
+{
+  "name": "nodeexpresse",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "djmf",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongo": "^0.1.0",
+    "mongoose": "^5.10.13",
+    "nodemon": "^2.0.6",
+    "pug": "^2.0.0-rc.1"
+  }
+}

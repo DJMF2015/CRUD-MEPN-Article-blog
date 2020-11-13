@@ -32,6 +32,8 @@ app.use(bodyparser.urlencoded({extended: false}))
 //parse application/json
 app.use(bodyparser.json());
 
+
+app.use(express.static(path.join(__dirname, 'public')));
 //Home Route
 app.get('/', function (req, res) {
     Article.find({}, (err, articles) => {

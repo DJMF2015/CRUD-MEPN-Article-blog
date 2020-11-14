@@ -48,6 +48,15 @@ app.get('/', function (req, res) {
     });
 });
 
+//get single article
+app.get('/articles/:id', function (req, res) {
+    Article.findById(req.params.id, function (err, article) {
+       res.render('article', {
+         article: article
+       });
+    });
+});
+
 //add Route
 app.get('/articles/add', function(req, res){
     res.render('add_article', {
@@ -55,6 +64,7 @@ app.get('/articles/add', function(req, res){
     });
 })
 
+//post article
 app.post('/articles/add', function(req, res){
    let article = new Article();
    console.log(req.body.title)

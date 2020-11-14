@@ -11,12 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "bootstrap": "^4.5.3",
+    "bootstrap": "^3.4.1",
     "bower-json": "^0.8.4",
     "express": "^4.17.1",
     "mongo": "^0.1.0",
     "mongoose": "^5.10.13",
     "nodemon": "^2.0.6",
+    "package.json": "^2.0.1",
     "pug": "^2.0.0-rc.1"
   }
 }

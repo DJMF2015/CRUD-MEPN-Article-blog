@@ -2,43 +2,42 @@ doctype html
 html
     head 
       title knowledgebase
-      link(rel='stylesheet' href='/@bower_components/bootstrap/dist/css/bootstrap.css')
+          //-  <!-- Latest compiled and minified CSS -->
+      link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous")
+      //- link(rel='stylesheet' href='/@bower_components/bootstrap/dist/css/bootstrap.css')
     body  
-      nav.navbar.navbar-inverse
-      .container
-        .navbar-header
-          button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
-            span.sr-only Toggle navigation
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          a.navbar-brand(href='/') KnowledgeBase
-        #navbar.collapse.navbar-collapse
-          ul.nav.navbar-nav
-            li
-              a(href='/') Home
-            if user
-              li
-                a(href='/articles/add') Add Article
-          ul.nav.navbar-nav.navbar-right
-            if user
-              li 
-                a(href='/users/logout') Logout
-            else
-              li
-                a(href='/users/register') Register
-              li
-                a(href='/users/login') Login
+nav.navbar.navbar-inverse
+  .container
+    .navbar-header
+      button.navbar-toggle.collapsed(type='button' data-toggle='collapse' data-target='#navbar' aria-expanded='false' aria-controls='navbar')
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      a.navbar-brand(href='/') KnowledgeBase
+    #navbar.collapse.navbar-collapse
+      ul.nav.navbar-nav
+        li.active
+          a(href='/') Home
+        li
+          a(href='/articles/add') About
+        li
+          a(href='/contact') Contact
+    .nav-collapse
     .container
       //- != messages('message', locals)
-      if errors
-        each error, i in errors
-          div(class="alert alert-danger") #{error.msg}
+      //- if errors
+      //-   each error, i in errors
+      //-     div(class="alert alert-danger") #{error.msg}
       block content
       br
       hr
       footer
          p Copyright &copy;  2020
-    script(src='/@bower_components/jquery/dist/jquery.js')  
-    script(src='/@bower_components/bootstrap/dist/js/bootstrap.js')
-     
+    //- script(src='/@bower_components/jquery/dist/jquery.js')  
+    //- script(src='/@bower_components/bootstrap/dist/js/bootstrap.js')
+     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    script(src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous")
+    //- link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous")
+ 
+    script(src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous")

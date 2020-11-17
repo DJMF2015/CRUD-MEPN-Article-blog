@@ -1,44 +1,45 @@
-const express = require('express')
+const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const bodyparser = require('body-parser');
-const port = 3000;
+const bodyParser = require('body-parser');
+const config = require('./config/database.js');
 
-mongoose.connect("mongodb://localhost/nodedb");
+mongoose.connect(config.database);
 let db = mongoose.connection;
 
-// check connection
-db.once('open', () => {
-        console.log('coonected to Mongo database');
-    });
+// Check connection
+db.once('open', function () {
+    console.log('Connected to MongoDB');
+});
 
-//check for connection errors
-db.on('error', (err) => {
-        console.log(err);
-    })
+// Check for DB errors
+db.on('error', function (err) {
+    console.log(err);
+});
 
+// Init App
 const app = express();
 
-
-//Bring in Models
+// Bring in Models
 let Article = require('./models/article');
+const { title } = require('process');
 
-//load views engine
+// Load View Engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-//bodypasrser middleware
-app.use(bodyparser.urlencoded({extended: false}))
-//parse application/json
-app.use(bodyparser.json());
-
+// Body Parser Middleware
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/json
+app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
-//Home Route
+// Home Route
 app.get('/', function (req, res) {
-    Article.find({}, (err, articles) => {
+    Article.find({}, function (err, articles) {
         if (err) {
-            console.log(err)
+            console.log(err);
         } else {
             res.render('index', {
                 title: 'Articles',
@@ -48,40 +49,96 @@ app.get('/', function (req, res) {
     });
 });
 
-//get single article
-app.get('/articles/:id', function (req, res) {
-    Article.findById(req.params.id, function (err, article) {
-       res.render('article', {
-         article: article
-       });
-    });
-});
-
 //add Route
-app.get('/articles/add', function(req, res){
+app.get('/article/add', function (req, res) {
     res.render('add_article', {
-        title: 'Add Articles...'
+        title: 'Add Article'
     });
-})
-
-//post article
-app.post('/articles/add', function(req, res){
-   let article = new Article();
-   console.log(req.body.title)
-   article.title = req.body.title;
-   article.author = req.body.author;
-   article.body = req.body.body;
-   article.save(function(err){
-       if(err){
-           console.log(err)
-       }else{
-           res.redirect('/')
-
-       }
-   });
 });
 
-app.listen(port, function(){
-  console.log('server started at port: ' , `${port}`);
+//Submit Post Route article
+app.post('/article/add', function (req, res) {
+    let article = new Article();
+    //    console.log(req.body.title)
+    article.title = req.body.title;
+    // article.author = req.body.author;
+    article.body = req.body.body;
+
+    article.save(function (err) {
+        if (err) {
+            console.log(err)
+            return;
+        } else {
+            res.redirect('/')
+        }
+    });
 });
- 
+// load edit form
+app.get('/article/edit/:id', function (req, res) {
+    Article.findById(req.params.id, function (err, article) {
+        if (err) {
+            console.log(err);
+            return res.redirect('/');
+        }
+        res.render('edit article', {
+            title: 'Edit Article',
+            article: article
+        });
+    });
+});
+
+app.post('/edit/:id', function (req, res) {
+    let article = {};
+    article.title = req.body.title;
+    article.author = req.body.author;
+    article.body = req.body.body;
+
+    let query = { _id: req.params.id }
+
+    Article.update(query, article, function (err) {
+        if (err) {
+            console.log(err);
+            return;
+        } else {
+            res.redirect('/');
+        }
+    });
+});
+
+// Delete Article
+app.delete('/delete/:id', function (req, res, error) {
+    if (errror) {
+        console.log(error);
+    }
+
+    let query = { _id: req.params.id }
+
+    Article.findById(req.params.id, function (err, article) {
+        if (article.author != req.user._id) {
+            res.status(500).send();
+        } else {
+            Article.remove(query, function (err) {
+                if (err) {
+                    console.log(err);
+                }
+                res.send('Success');
+            });
+        }
+    });
+});
+
+// Get Single Article
+app.get('/article/:id', function (req, res) {
+    Article.findById(req.params.id, function (err, article) {
+        res.render('article', {
+            article: article
+        });
+    });
+});
+
+
+const port = 3000;
+
+app.listen(port, function () {
+    console.log('server started at port: ', `${port}`);
+});

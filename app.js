@@ -58,8 +58,7 @@ app.get('/article/add', function (req, res) {
 
 //Submit Post Route article
 app.post('/article/add', function (req, res) {
-    let article = new Article();
-    //    console.log(req.body.title)
+    let article = new Article(); 
     article.title = req.body.title;
     // article.author = req.body.author;
     article.body = req.body.body;
@@ -80,14 +79,14 @@ app.get('/article/edit/:id', function (req, res) {
             console.log(err);
             return res.redirect('/');
         }
-        res.render('edit article', {
+        res.render('edit_article', {
             title: 'Edit Article',
             article: article
         });
     });
 });
 
-app.post('/edit/:id', function (req, res) {
+app.post('/article/edit/:id', function (req, res) {
     let article = {};
     article.title = req.body.title;
     article.author = req.body.author;
@@ -100,32 +99,23 @@ app.post('/edit/:id', function (req, res) {
             console.log(err);
             return;
         } else {
+            console.log('post updated ' +  article.body)
             res.redirect('/');
         }
     });
 });
 
 // Delete Article
-app.delete('/delete/:id', function (req, res, error) {
-    if (errror) {
-        console.log(error);
-    }
-
+app.delete('/article/:id', function (req, res) {
     let query = { _id: req.params.id }
 
-    Article.findById(req.params.id, function (err, article) {
-        if (article.author != req.user._id) {
-            res.status(500).send();
-        } else {
-            Article.remove(query, function (err) {
-                if (err) {
-                    console.log(err);
-                }
-                res.send('Success');
-            });
+    Article.remove(query, function (err) {
+        if (err) {
+            console.log(err);
         }
-    });
-});
+        res.send('Sucessfuly deleted');
+    })
+})
 
 // Get Single Article
 app.get('/article/:id', function (req, res) {

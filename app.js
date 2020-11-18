@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const config = require('./config/database.js');
 const flash = require('connect-flash');
 const session = require('express-session')
+const passport = require('passport');
 const expressValidator = require('express-validator');
 
 mongoose.connect(config.database);
@@ -20,12 +21,11 @@ db.on('error', function (err) {
     console.log(err);
 });
 
-// Iiit App
+// init App
 const app = express();
 
 // Bring in Models
 let Article = require('./models/article');
-// const { title } = require('process');
 
 // Load View Engine
 app.set('views', path.join(__dirname, 'views'));
@@ -54,7 +54,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-//express Validator middleware??
+//express Validator middleware ??? 
 app.use(expressValidator({
     errorFormatter: function (param, msg, value) {
         var namespace = param.split('.')
@@ -72,8 +72,17 @@ app.use(expressValidator({
     }
 }));
 
+//passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('*', (req, res, next) => {
+    res.locals.user = req.user || null;
+    next();
+})
+
 // Home Route
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
     Article.find({}, function (err, articles) {
         if (err) {
             console.log(err);
@@ -95,7 +104,8 @@ app.get('/article/add', function (req, res) {
 
 //Submit Post Route article
 app.post('/article/add', function (req, res) {
-    let article = new Article(); 
+    //new instance
+    let article = new Article();
     article.title = req.body.title;
     article.author = req.body.author;
     article.body = req.body.body;
@@ -138,7 +148,7 @@ app.post('/article/edit/:id', function (req, res) {
             console.log(err);
             return;
         } else {
-            console.log('post updated ' +  article.body)
+            console.log('post updated ' + article.body)
             res.redirect('/');
         }
     });
@@ -165,9 +175,14 @@ app.get('/article/:id', function (req, res) {
     });
 });
 
+//Route files
+// let articles = require('./routes/articles')
+// let users = require('./routes/users')
+// app.use('/articles', articles);
+// app.use('/users'. users);
 
+//server
 const port = 3000;
-
 app.listen(port, function () {
     console.log('server started at port: ', `${port}`);
 });

@@ -1,5 +1,5 @@
 {
-  "name": "nodeexpresse",
+  "name": "nodeexpress",
   "version": "1.0.0",
   "description": "mongo, node, express crud",
   "main": "app.js",
@@ -7,9 +7,10 @@
     "start": "nodemon app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "djmf",
+  "author": "DJMF",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "bootstrap": "^3.4.1",
     "bower-json": "^0.8.4",
@@ -17,11 +18,12 @@
     "express": "^4.17.1",
     "express-messages": "^1.0.1",
     "express-session": "^1.17.1",
-    "express-validator": "^6.6.1",
+    "express-validator": "^3.2.0",
     "mongo": "^0.1.0",
     "mongoose": "^5.10.13",
     "nodemon": "^2.0.6",
-    "package.json": "^2.0.1",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
     "pug": "^2.0.0-rc.1"
   }
 }

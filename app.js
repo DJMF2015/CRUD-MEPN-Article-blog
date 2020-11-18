@@ -3,6 +3,9 @@ const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const config = require('./config/database.js');
+const flash = require('connect-flash');
+const session = require('express-session')
+const expressValidator = require('express-validator');
 
 mongoose.connect(config.database);
 let db = mongoose.connection;
@@ -12,17 +15,17 @@ db.once('open', function () {
     console.log('Connected to MongoDB');
 });
 
-// Check for DB errors
+// Check for db errors
 db.on('error', function (err) {
     console.log(err);
 });
 
-// Init App
+// Iiit App
 const app = express();
 
 // Bring in Models
 let Article = require('./models/article');
-const { title } = require('process');
+// const { title } = require('process');
 
 // Load View Engine
 app.set('views', path.join(__dirname, 'views'));
@@ -31,10 +34,44 @@ app.set('view engine', 'pug');
 // Body Parser Middleware
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
 app.use(bodyParser.json());
 
+//public folder
 app.use(express.static(path.join(__dirname, 'public')));
+
+//Session data not saved in cookie itself-stored server side as session ID
+app.use(session({
+    secret: 'busy beaver3',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+}))
+
+//express messages middleware
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+    res.locals.messages = require('express-messages')(req, res);
+    next();
+});
+
+//express Validator middleware??
+app.use(expressValidator({
+    errorFormatter: function (param, msg, value) {
+        var namespace = param.split('.')
+            , root = namespace.shift()
+            , formParam = root;
+
+        while (namespace.length) {
+            formParam += '[' + namespace.shift() + ']';
+        }
+        return {
+            param: formParam,
+            msg: msg,
+            value: value
+        };
+    }
+}));
+
 // Home Route
 app.get('/', function (req, res) {
     Article.find({}, function (err, articles) {
@@ -49,7 +86,7 @@ app.get('/', function (req, res) {
     });
 });
 
-//add Route
+//add article Route
 app.get('/article/add', function (req, res) {
     res.render('add_article', {
         title: 'Add Article'
@@ -60,7 +97,7 @@ app.get('/article/add', function (req, res) {
 app.post('/article/add', function (req, res) {
     let article = new Article(); 
     article.title = req.body.title;
-    // article.author = req.body.author;
+    article.author = req.body.author;
     article.body = req.body.body;
 
     article.save(function (err) {
@@ -72,6 +109,7 @@ app.post('/article/add', function (req, res) {
         }
     });
 });
+
 // load edit form
 app.get('/article/edit/:id', function (req, res) {
     Article.findById(req.params.id, function (err, article) {
@@ -86,6 +124,7 @@ app.get('/article/edit/:id', function (req, res) {
     });
 });
 
+//update article route
 app.post('/article/edit/:id', function (req, res) {
     let article = {};
     article.title = req.body.title;
@@ -105,7 +144,7 @@ app.post('/article/edit/:id', function (req, res) {
     });
 });
 
-// Delete Article
+// Delete single Article
 app.delete('/article/:id', function (req, res) {
     let query = { _id: req.params.id }
 
@@ -117,7 +156,7 @@ app.delete('/article/:id', function (req, res) {
     })
 })
 
-// Get Single Article
+// Get a Single Article
 app.get('/article/:id', function (req, res) {
     Article.findById(req.params.id, function (err, article) {
         res.render('article', {

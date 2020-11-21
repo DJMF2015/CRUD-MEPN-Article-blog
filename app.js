@@ -2,20 +2,18 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const config = require('./config/database.js');
-const flash = require('connect-flash');
-const session = require('express-session')
-const passport = require('passport');
 const expressValidator = require('express-validator');
+const flash = require('connect-flash');
+const session = require('express-session');
+const passport = require('passport');
+const config = require('./config/database');
 
 mongoose.connect(config.database);
 let db = mongoose.connection;
-
 // Check connection
 db.once('open', function () {
     console.log('Connected to MongoDB');
 });
-
 // Check for db errors
 db.on('error', function (err) {
     console.log(err);
@@ -26,7 +24,6 @@ const app = express();
 
 // Bring in Models
 let Article = require('./models/article');
-
 // Load View Engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -35,26 +32,25 @@ app.set('view engine', 'pug');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 //public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Session data not saved in cookie itself-stored server side as session ID
+// Note: ‘express - session’ simplifies the process of making HTTP requests stateful.This is done by storing data such as user id in a session cookie and sending it back to the client. 
 app.use(session({
-    secret: 'busy beaver3',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }
-}))
+    secret: 'busy beaver',
+    resave: true,
+    saveUninitialized: true
+}));
 
-//express messages middleware
+// Express Messages Middleware
 app.use(require('connect-flash')());
 app.use(function (req, res, next) {
     res.locals.messages = require('express-messages')(req, res);
     next();
 });
 
-//express Validator middleware ??? 
+// Express Validator Middleware
 app.use(expressValidator({
     errorFormatter: function (param, msg, value) {
         var namespace = param.split('.')
@@ -73,13 +69,15 @@ app.use(expressValidator({
 }));
 
 //passport middleware
+require('./config/passport')(passport)
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('*', (req, res, next) => {
+app.get('*', function (req, res, next) {
+    //set global variable and request user object else null if false
     res.locals.user = req.user || null;
     next();
-})
+});
 
 // Home Route
 app.get('/', (req, res) => {
@@ -95,91 +93,11 @@ app.get('/', (req, res) => {
     });
 });
 
-//add article Route
-app.get('/article/add', function (req, res) {
-    res.render('add_article', {
-        title: 'Add Article'
-    });
-});
-
-//Submit Post Route article
-app.post('/article/add', function (req, res) {
-    //new instance
-    let article = new Article();
-    article.title = req.body.title;
-    article.author = req.body.author;
-    article.body = req.body.body;
-
-    article.save(function (err) {
-        if (err) {
-            console.log(err)
-            return;
-        } else {
-            res.redirect('/')
-        }
-    });
-});
-
-// load edit form
-app.get('/article/edit/:id', function (req, res) {
-    Article.findById(req.params.id, function (err, article) {
-        if (err) {
-            console.log(err);
-            return res.redirect('/');
-        }
-        res.render('edit_article', {
-            title: 'Edit Article',
-            article: article
-        });
-    });
-});
-
-//update article route
-app.post('/article/edit/:id', function (req, res) {
-    let article = {};
-    article.title = req.body.title;
-    article.author = req.body.author;
-    article.body = req.body.body;
-
-    let query = { _id: req.params.id }
-
-    Article.update(query, article, function (err) {
-        if (err) {
-            console.log(err);
-            return;
-        } else {
-            console.log('post updated ' + article.body)
-            res.redirect('/');
-        }
-    });
-});
-
-// Delete single Article
-app.delete('/article/:id', function (req, res) {
-    let query = { _id: req.params.id }
-
-    Article.remove(query, function (err) {
-        if (err) {
-            console.log(err);
-        }
-        res.send('Sucessfuly deleted');
-    })
-})
-
-// Get a Single Article
-app.get('/article/:id', function (req, res) {
-    Article.findById(req.params.id, function (err, article) {
-        res.render('article', {
-            article: article
-        });
-    });
-});
-
-//Route files
-// let articles = require('./routes/articles')
-// let users = require('./routes/users')
-// app.use('/articles', articles);
-// app.use('/users'. users);
+//Routers 
+let articles = require('./routes/articles')
+let users = require('./routes/users')
+app.use('/articles', articles);
+app.use('/users', users);
 
 //server
 const port = 3000;

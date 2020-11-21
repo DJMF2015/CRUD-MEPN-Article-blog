@@ -17,7 +17,7 @@ router.get('/add', ensureAuthenticated, function (req, res) {
 router.post('/add', function (req, res) {
     //new instance
     req.checkBody('title', 'Title is required').notEmpty();
-    req.checkBody('author', 'Author is required').notEmpty();
+    // req.checkBody('author', 'Author is required').notEmpty();
     req.checkBody('body', 'Body is required').notEmpty();
 
     // Get Errors
@@ -39,6 +39,7 @@ router.post('/add', function (req, res) {
                 console.log(err);
                 return;
             } else {
+                console.log('Article Added')
                 req.flash('success', 'Article Added');
                 res.redirect('/');
             }
@@ -51,6 +52,8 @@ router.post('/add', function (req, res) {
 router.get('/edit/:id', ensureAuthenticated, function (req, res) {
     Article.findById(req.params.id, function (err, article) {
         if (article.author != req.user._id) {
+
+            console.log('Not Authorised')
             req.flash('danger', 'Not Authorized');
             return res.redirect('/');
         }
@@ -75,6 +78,7 @@ router.post('/edit/:id', function (req, res) {
             console.log(err);
             return;
         } else {
+            console.log('Success, Article Added')
             req.flash('success', 'Article Updated');
             res.redirect('/');
         }
@@ -97,6 +101,7 @@ router.delete('/:id', function (req, res) {
                 if (err) {
                     console.log(err);
                 }
+                console.log('Deleted')
                 res.send('Success');
             });
         }
@@ -106,19 +111,26 @@ router.delete('/:id', function (req, res) {
 // Get a Single Article
 router.get('/:id', function (req, res) {
     Article.findById(req.params.id, function (err, article) {
-        res.render('article', {
-            article: article
+        User.findById(article.author, function (err, user) {
+            res.render('article', {
+                article: article,
+                author: user.name
+            });
         });
     });
-});
-
+})
 // Access Control
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     } else {
+        newFunction();
         req.flash('danger', 'Please login');
         res.redirect('/users/login');
+    }
+
+    function newFunction() {
+        console.log('Please login');
     }
 }
 

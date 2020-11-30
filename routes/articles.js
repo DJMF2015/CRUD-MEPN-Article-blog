@@ -78,7 +78,7 @@ router.post('/edit/:id', function (req, res) {
             console.log(err);
             return;
         } else {
-            console.log('Success, Article Added')
+            console.log('Success, Article updated')
             req.flash('success', 'Article Updated');
             res.redirect('/');
         }
@@ -101,7 +101,8 @@ router.delete('/:id', function (req, res) {
                 if (err) {
                     console.log(err);
                 }
-                console.log('Deleted')
+                console.log('Article Deleted')
+                // res.render('show_msg', { message: "Article Deleted", type: "error" });
                 res.send('Success');
             });
         }
@@ -124,14 +125,13 @@ function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     } else {
-        newFunction();
-        req.flash('danger', 'Please login');
+        console.log('Please login');
+        // req.flash('danger', 'Please login');
+    
         res.redirect('/users/login');
     }
 
-    function newFunction() {
-        console.log('Please login');
-    }
+   
 }
 
 module.exports = router;

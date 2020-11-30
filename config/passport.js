@@ -7,7 +7,7 @@ const passport = require('passport');
 module.exports = function (passport) {
     // LOCAL STRATEGY
     passport.use(new LocalStrategy((username, password, done) => {
-        //macth username
+        //match username
         let query = { username: username };//callback
         User.findOne(query, function (err, user) {
             if (err)
@@ -19,16 +19,16 @@ module.exports = function (passport) {
             }
 
             // Match Password test pword and check if match user object password value
-            bcrypt.compare(password, user.password, (err, isMatch) => {
-                if (err)
-                    throw err;
+            bcrypt.compare(password, user.password, function (err, isMatch) {
+                    if (err)
+                        throw err;
                     //if password is true
-                if (isMatch) {
-                    return done(null, user);
-                } else {
-                    return done(null, false, { message: "Wrong password!" });
-                }
-            });
+                    if (isMatch) {
+                        return done(null, user);
+                    } else {
+                        return done(null, false, { message: "Wrong password!" });
+                    }
+                });
         });
     }))
 

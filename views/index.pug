@@ -2,7 +2,10 @@ extends layout
 
 block content
   h1 #{title}
+  h4 #{author}
   ul.list-group
     each article, i in articles
-      li.list-group-item
-        a(href="/article/"+article._id)= article.title
+      list-group-item
+        a(href="/articles/"+article._id)= article.title
+      br
+      h5 #{article.body.slice(0,30)}.....

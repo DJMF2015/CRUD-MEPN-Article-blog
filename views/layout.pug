@@ -32,12 +32,13 @@ html
                 a(href='/users/login') Login
     .container
       != messages('message', locals)
-      //- if successes
-      //- each success in successes
-      //-   div(class="alert.alert-success") #{ success.msg }
+      //-  each message in errors
       if errors
         each error, i in errors
           div(class="alert alert-danger") #{error.msg}
+      if !errors
+          //-  each error, i in errors
+          div(class="alert.alert-success") #{ error }
       block content
       br
       hr

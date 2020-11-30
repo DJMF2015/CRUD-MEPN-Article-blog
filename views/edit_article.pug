@@ -7,10 +7,10 @@ block content
       label Title:
       input.form-control(name='title', type='text', value=article.title)
     #form-group
-      label Author:
-      input.form-control(name='author', type='text', value=article.author)
+      label Author ID:
+      input.form-control(readonly name='author', type='text', value=article.author )
     #form-group
-      label Body:
+      label Subject:
       textarea.form-control(name='body')= article.body
     br
     input.btn.btn-primary(type='submit',value='Submit')

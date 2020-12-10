@@ -14,5 +14,8 @@
 
 ### installation:
 * npm install
+
+from inside terminal:
+* npm mongod
 * nodemon app.js
 * open browser at http://localhost:3000

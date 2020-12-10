@@ -4,8 +4,6 @@ block content
     h1 #{newUser}
     if(type == "error")
         h3.div(class="alert alert-danger") #{message}
-    else
-        h3.div(class="alert alert-success" style='color: green;') Registered!
-            name: #{user.username}
-            h3.div(class="alert alert-success" style='color: green;') #{message}
-                name.textContent You are now registered  #{user.username}! ;
+    h1 #{newUser}
+    if (type == "success" || type === null)
+    h3.div(class="alert alert-success" style='color: green;') #{message} #{newUser}! 

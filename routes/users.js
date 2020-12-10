@@ -28,7 +28,7 @@ router.post('/register', function (req, res) {
     req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
 
     let errors = req.validationErrors();
-    let userName = req.body.username;
+    var userName = req.body.username;
 
     if (errors) {
         res.render('register', {
@@ -53,42 +53,38 @@ router.post('/register', function (req, res) {
                 newUser.save(function (err) {
                     if (err) {
                         console.log(err);
-                        res.render('show_msg', { message: "This username has already been chosen.", type: "error" });
                         return;
                     } else {
                         console.log('You are now registered')
-                        // req.flash('success', 'You are now registered and can log in');
-                        res.render('show_msg', {
-                            message: "", type: "success", user: newUser
-                        });
-                        // res.redirect('/users/login');
+                        req.flash('success', 'You are now registered and can log in');
+                        res.redirect('/users/login');
                     }
-                });
+                }) 
             });
         });
     }
 });
-
+ 
 // Login Form
 router.get('/login', function (req, res) {
     res.render('login');
 });
 
-// Provide login process and our local strategy 
-router.post('/login', (req, res, next) => {
+// Login Process
+router.post('/login', function (req, res, next) {
     passport.authenticate('local', {
         successRedirect: '/',
         failureRedirect: '/users/login',
-        failureFlash: 'You are now logged in',
+        failureFlash: true
     })(req, res, next);
 });
 
 // logout
 router.get('/logout', function (req, res) {
     req.logout();
-    console.log('You are logged out')
-    req.flash('success', 'You are logged out');
+    req.flash('success', 'You are logged out ');
     res.redirect('/users/login');
 });
+
 
 module.exports = router;

@@ -43,6 +43,13 @@ app.use(session({
     saveUninitialized: true
 }));
 
+// Express Messages Middleware
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+    res.locals.messages = require('express-messages')(req, res);
+    next();
+});
+
 // Express Validator Middleware
 app.use(expressValidator({
     errorFormatter: function (param, msg, value) {
@@ -61,7 +68,7 @@ app.use(expressValidator({
     }
 }));
 
-// Express Messages Middleware  
+ 
 //passport middleware
 require('./config/passport')(passport)
 app.use(passport.initialize());
@@ -73,11 +80,7 @@ app.get('*', function (req, res, next) {
     next();
 });
 
-app.use(require('connect-flash')());
-app.use(function (req, res, next) {
-    res.locals.messages = require('express-messages')(req, res);
-    next();
-});
+
 // Home Route
 app.get('/', (req, res) => {
     Article.find({}, function (err, articles) {

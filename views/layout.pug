@@ -36,9 +36,6 @@ html
       if errors
         each error, i in errors
           div(class="alert alert-danger") #{error.msg}
-      if !errors
-          //-  each error, i in errors
-          div(class="alert.alert-success") #{ error }
       block content
       br
       hr
